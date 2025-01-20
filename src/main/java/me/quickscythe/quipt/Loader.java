@@ -34,7 +34,7 @@ public class Loader implements PluginLoader {
 
         MavenLibraryResolver quipt = new MavenLibraryResolver();
         quipt.addDependency(new Dependency(new DefaultArtifact("me.quickscythe:quipt-bot:1.0"), null));
-        quipt.addDependency(new Dependency(new DefaultArtifact("me.quickscythe:quipt-core:0.0.3-1.21-alpha-B1"), null));
+        quipt.addDependency(new Dependency(new DefaultArtifact("me.quickscythe:quipt-core:0.0.6-alpha-B1"), null));
         quipt.addRepository(new RemoteRepository.Builder(
                 "quipt", "default", "https://repo.vanillaflux.com/repository/quipt/"
         ).build());
