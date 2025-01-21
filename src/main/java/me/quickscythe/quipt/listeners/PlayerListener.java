@@ -8,6 +8,7 @@ import me.quickscythe.quipt.api.config.ConfigManager;
 import me.quickscythe.quipt.files.DiscordConfig;
 import me.quickscythe.quipt.utils.CoreUtils;
 import me.quickscythe.quipt.utils.chat.MessageUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -34,7 +35,9 @@ public class PlayerListener implements Listener {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.joinMessage()));
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
+                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.joinMessage()));
+                        }, 0L);
                     }
                 }
             }
@@ -48,7 +51,9 @@ public class PlayerListener implements Listener {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.quitMessage()));
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
+                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.quitMessage()));
+                        }, 0L);
                     }
                 }
             }
@@ -62,7 +67,9 @@ public class PlayerListener implements Listener {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.deathMessage()));
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
+                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.deathMessage()));
+                        }, 0L);
                     }
                 }
             }
@@ -77,7 +84,9 @@ public class PlayerListener implements Listener {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.chat_message_channel) || channel.getId().equalsIgnoreCase(config.chat_message_channel)) {
-                        channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.message()));
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
+                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.message()));
+                        }, 0L);
                     }
                 }
             }
