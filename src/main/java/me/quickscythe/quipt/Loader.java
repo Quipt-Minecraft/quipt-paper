@@ -24,6 +24,9 @@ import java.util.Objects;
 public class Loader implements PluginLoader {
     @Override
     public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
+        File dependenciesFolder = new File("libraries");
+        if(!dependenciesFolder.exists()) CoreUtils.logger().log("Loader", "Creating dependencies folder: " + dependenciesFolder.mkdirs());
+
         MavenLibraryResolver mavenCentral = new MavenLibraryResolver();
         mavenCentral.addDependency(new Dependency(new DefaultArtifact("org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r"), null));
         mavenCentral.addDependency(new Dependency(new DefaultArtifact("org.json:json:20231013"), null));
@@ -40,8 +43,6 @@ public class Loader implements PluginLoader {
         ).build());
         classpathBuilder.addLibrary(quipt);
         classpathBuilder.addLibrary(mavenCentral);
-        File dependenciesFolder = new File("plugins/dependencies");
-        if(!dependenciesFolder.exists()) CoreUtils.logger().log("Loader", "Creating dependencies folder: " + dependenciesFolder.mkdir());
         for(File file : Objects.requireNonNull(dependenciesFolder.listFiles())) {
             if (file.getName().endsWith(".jar")) {
                 classpathBuilder.addLibrary(new JarLibrary(file.toPath()));
