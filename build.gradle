@@ -4,6 +4,7 @@ plugins {
     id 'java-library'
     id("io.papermc.paperweight.userdev") version "1.7.7"
     id("xyz.jpenilla.run-paper") version "2.3.0"
+    id "com.modrinth.minotaur" version "2.+"
     id 'maven-publish'
 }
 
@@ -71,6 +72,22 @@ publishing {
         }
     }
 }
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    def log = System.getenv("CHANGELOG")
+    if (log != null) changelog = log else changelog = file("changelog.md").text
+    projectId = "${modrinth_id}"
+    versionNumber = "${plugin_version}"
+    versionType = "${build_status}"
+    uploadFile = jar
+    loaders = ["paper"]
+    syncBodyFrom = file("readme.md").text
+//    changelog = file("changelog.md").text
+    dependencies {}
+}
+
+tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 
 paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
