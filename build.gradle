@@ -1,9 +1,8 @@
-import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 
 plugins {
     id 'java-library'
-    id("io.papermc.paperweight.userdev") version "1.7.7"
-    id("xyz.jpenilla.run-paper") version "2.3.0"
+//    id("io.papermc.paperweight.userdev") version "1.7.7"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
     id "com.modrinth.minotaur" version "2.+"
     id 'maven-publish'
 }
@@ -29,12 +28,24 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("${minecraft_version}-${paper_version}")
+
+    implementation "io.papermc.paper:paper-api:${minecraft_version}-${paper_version}"
 
     implementation "me.quickscythe:quipt-core:${quipt_core_version}"
     implementation "me.quickscythe:quipt-bot:${quipt_bot_version}"
     implementation "org.json:json:$json_version"
     implementation "org.eclipse.jgit:org.eclipse.jgit:$jgit_version"
+
+
+//    paperweight.paperDevBundle("${minecraft_version}-${paper_version}")
+}
+tasks {
+    runServer {
+        // Configure the Minecraft version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        minecraftVersion("${minecraft_version}")
+    }
 }
 
 def targetJavaVersion = 21
@@ -78,8 +89,9 @@ modrinth {
     def log = System.getenv("CHANGELOG")
     if (log != null) changelog = log else changelog = file("changelog.md").text
     projectId = "${modrinth_id}"
-    versionNumber = "${plugin_version}"
+    versionNumber = "${version}"
     versionType = "${build_status}"
+    gameVersions = ["1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4"]
     uploadFile = jar
     loaders = ["paper"]
     syncBodyFrom = file("readme.md").text
@@ -89,5 +101,4 @@ modrinth {
 
 tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 
-paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
