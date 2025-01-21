@@ -62,7 +62,7 @@ java {
 
 
 processResources {
-    def props = [version: version]
+    def props = [minecraft_version: minecraft_version, author: author, name: rootProject.name, plugin_version: plugin_version]
     inputs.properties props
     filteringCharset 'UTF-8'
     filesMatching('paper-plugin.yml') {

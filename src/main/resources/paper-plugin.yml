@@ -1,6 +1,7 @@
-name: "Quipt"
-version: "0.0.1"
+name: "${name}"
+version: "${plugin_version}"
 main: me.quickscythe.quipt.Initializer
-author: "quick"
-api-version: "1.21"
+author: "${author}"
+api-version: "${minecraft_version}"
 loader: me.quickscythe.quipt.Loader
+
