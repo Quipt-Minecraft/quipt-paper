@@ -4,7 +4,7 @@
 [![discord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-singular_vector.svg)](https://discord.gg/EhfMJmjTXh)
 [![paper](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/paper_vector.svg)](https://papermc.io/downloads/paper)
 
-QUIPT is an ambitious project that aims to provide a handful of tools to both server owners and developers. Be sure to check out the [wiki](https://github.com/QuickScythe/QUIPT/wiki) for a more in-depth description of how to use this plugin.
+QUIPT is an ambitious project that aims to provide a handful of tools to both server owners and developers. Be sure to check out the [wiki](https://www.vanillaflux.com/quipt/) for a more in-depth description of how to use this plugin.
 
 ## Server Owner Features
 QUIPT was created with developers in mind, however, also provides some features for server owners to use "out of the box"

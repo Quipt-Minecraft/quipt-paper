@@ -2,12 +2,12 @@ package me.quickscythe.quipt.utils;
 
 
 import me.quickscythe.Bot;
-import me.quickscythe.api.embed.Embed;
 import me.quickscythe.api.guild.QuiptGuild;
 import me.quickscythe.api.guild.channel.QuiptTextChannel;
 import me.quickscythe.quipt.Plugin;
 import me.quickscythe.quipt.api.QuiptPlugin;
 import me.quickscythe.quipt.api.config.ConfigManager;
+import me.quickscythe.quipt.api.discord.embed.Embed;
 import me.quickscythe.quipt.files.DiscordConfig;
 import me.quickscythe.quipt.files.HashesConfig;
 import me.quickscythe.quipt.files.JenkinsConfig;
@@ -77,14 +77,12 @@ public class CoreUtils {
                     }
                 }
             }, 20);
-
         }
     }
 
     public static File dataFolder() {
         return dataFolder;
     }
-
 
     public static Logger logger() {
         return logger;
@@ -94,11 +92,9 @@ public class CoreUtils {
         return plugin;
     }
 
-
     public static ResourcePackServer packServer() {
         return packserver;
     }
-
 
     public static QuiptPlugin quiptPlugin() {
         return quiptPlugin;

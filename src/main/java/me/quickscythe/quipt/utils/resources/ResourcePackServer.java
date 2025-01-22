@@ -1,11 +1,3 @@
-/*
- * Copyright (c) 2025. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
- */
-
 package me.quickscythe.quipt.utils.resources;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -62,16 +54,10 @@ public class ResourcePackServer {
         pack = new File(CoreUtils.dataFolder(), "resources/pack.zip");
         repo = new File(CoreUtils.dataFolder(), "resources/repo/");
         if (!pack.getParentFile().isDirectory())
-            CoreUtils.logger().log(Logger.LogLevel.INFO, "Resources",
-                    pack.getParentFile().mkdirs()
-                            ? "Set up 'pack.zip' parents."
-                            : "Couldn't set up 'pack.zip' parents.");
+            CoreUtils.logger().log(Logger.LogLevel.INFO, "Resources", pack.getParentFile().mkdirs() ? "Set up 'pack.zip' parents." : "Couldn't set up 'pack.zip' parents.");
         if (!repo.exists())
-            CoreUtils.logger().log(Logger.LogLevel.INFO, "Resources",
-                    repo.mkdirs()
-                            ? "Set up 'repo' directory."
-                            : "Couldn't set up 'repo' directory.");
-        if(pack.exists()){
+            CoreUtils.logger().log(Logger.LogLevel.INFO, "Resources", repo.mkdirs() ? "Set up 'repo' directory." : "Couldn't set up 'repo' directory.");
+        if (pack.exists()) {
             startServer();
         }
     }
@@ -86,7 +72,7 @@ public class ResourcePackServer {
             server.setExecutor(null);
             server.start();
 
-            //
+            if (!pack.exists()) pack.createNewFile();
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
             try (InputStream in = Files.newInputStream(pack.toPath())) {
                 byte[] buffer = new byte[8192];
@@ -185,8 +171,7 @@ public class ResourcePackServer {
 
     public void setUrl(String url) {
         if (url.isEmpty()) return;
-        if(!serverStarted)
-            startServer();
+        if (!serverStarted) startServer();
         String oldUrl = packData.repo_url;
         if (!oldUrl.equals(url)) {
             CoreUtils.logger().log("Resources", "Resource pack URL changed. Updating pack.");

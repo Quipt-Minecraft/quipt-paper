@@ -1,7 +1,5 @@
-
 plugins {
     id 'java-library'
-//    id("io.papermc.paperweight.userdev") version "1.7.7"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id "com.modrinth.minotaur" version "2.+"
     id 'maven-publish'
@@ -9,7 +7,6 @@ plugins {
 
 group = 'me.quickscythe'
 version = "${plugin_version}-${minecraft_version}-${build_status}-B${build_number}"
-
 
 repositories {
     mavenCentral()
@@ -35,15 +32,9 @@ dependencies {
     implementation "me.quickscythe:quipt-bot:${quipt_bot_version}"
     implementation "org.json:json:$json_version"
     implementation "org.eclipse.jgit:org.eclipse.jgit:$jgit_version"
-
-
-//    paperweight.paperDevBundle("${minecraft_version}-${paper_version}")
 }
 tasks {
     runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("${minecraft_version}")
     }
 }
@@ -95,7 +86,6 @@ modrinth {
     uploadFile = jar
     loaders = ["paper"]
     syncBodyFrom = file("readme.md").text
-//    changelog = file("changelog.md").text
     dependencies {}
 }
 
