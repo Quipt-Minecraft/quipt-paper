@@ -19,7 +19,6 @@ public final class Initializer extends JavaPlugin {
         new PlayerListener(this);
         new EventListener(this);
         new SessionListener(this);
-
     }
 
     @Override
