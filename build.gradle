@@ -1,3 +1,5 @@
+import java.awt.Color
+
 plugins {
     id 'java-library'
     id("xyz.jpenilla.run-paper") version "2.3.1"
@@ -92,3 +94,30 @@ modrinth {
 tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 
 
+task sendDataToUrl {
+    doLast {
+        try {
+            URL url = new URL("https://discord.com/api/webhooks/1331731988230443150/gYnT_JblP6gz4Ztb3g94eebS9pwxdMdsrefTY3_yAiDKwkGr0CjvYp41v46yuniyoPCv")
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection()
+            connection.setRequestMethod("POST")
+            connection.setRequestProperty("Content-Type", "application/json; utf-8")
+            connection.setRequestProperty("Accept", "application/json")
+            connection.setDoOutput(true)
+
+
+            String jsonInputString = "{\"embeds\":[{\"title\": \"Update Received\", \"description\": \"A new version of ${rootProject.name} has been uploaded to Modrinth.\", \"color\":1638162,\"fields\":[{\"name\":\"Version\",\"value\":\"${version}\",\"inline\":true},{\"name\":\"Download\",\"value\":\"[here](https://modrinth.com/plugin/${modrinth_id}/version/${version})\",\"inline\":true}]}]}"
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8")
+                os.write(input, 0, input.length)
+            }
+
+            int responseCode = connection.getResponseCode()
+            System.out.println("Response Code: " + responseCode)
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
+    }
+}
+
+tasks.modrinth.dependsOn sendDataToUrl
