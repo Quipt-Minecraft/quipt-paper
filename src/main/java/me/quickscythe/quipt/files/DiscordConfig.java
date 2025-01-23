@@ -8,7 +8,7 @@
 
 package me.quickscythe.quipt.files;
 
-import me.quickscythe.quipt.api.QuiptPlugin;
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigTemplate;
 import me.quickscythe.quipt.api.config.ConfigValue;
@@ -33,7 +33,7 @@ public class DiscordConfig extends Config {
     @ConfigValue
     public String chat_message_channel = "none";
 
-    public DiscordConfig(File file, String name, QuiptPlugin plugin) {
+    public DiscordConfig(File file, String name, QuiptIntegration plugin) {
         super(file, name, plugin);
     }
 }

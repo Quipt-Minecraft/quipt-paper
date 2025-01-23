@@ -1,6 +1,6 @@
 package me.quickscythe.quipt.utils.sessions;
 
-import me.quickscythe.quipt.api.QuiptPlugin;
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigManager;
 import me.quickscythe.quipt.files.SessionConfig;
@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -23,7 +22,7 @@ public class SessionManager {
     private static final Map<UUID, JSONObject> CURRENT_SESSIONS = new HashMap<>();
     private static SessionConfig config;
 
-    public static void start(QuiptPlugin plugin) {
+    public static void start(QuiptIntegration plugin) {
         config = ConfigManager.registerConfig(plugin, SessionConfig.class);
     }
 

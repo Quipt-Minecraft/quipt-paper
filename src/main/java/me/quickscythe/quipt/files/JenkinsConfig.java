@@ -8,7 +8,7 @@
 
 package me.quickscythe.quipt.files;
 
-import me.quickscythe.quipt.api.QuiptPlugin;
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigTemplate;
 import me.quickscythe.quipt.api.config.ConfigValue;
@@ -30,7 +30,7 @@ public class JenkinsConfig extends Config {
     @ConfigValue
     public String api_endpoint = "/api/json";
 
-    public JenkinsConfig(File file, String name, QuiptPlugin plugin) {
+    public JenkinsConfig(File file, String name, QuiptIntegration plugin) {
         super(file, name, plugin);
     }
 }

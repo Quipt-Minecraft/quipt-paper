@@ -8,7 +8,7 @@
 
 package me.quickscythe.quipt.files;
 
-import me.quickscythe.quipt.api.QuiptPlugin;
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigTemplate;
 import me.quickscythe.quipt.api.config.ConfigValue;
@@ -24,7 +24,7 @@ public class HashesConfig extends Config {
     @ConfigValue
     public String commit_hash = "";
 
-    public HashesConfig(File file, String name, QuiptPlugin plugin) {
+    public HashesConfig(File file, String name, QuiptIntegration plugin) {
         super(file, name, plugin);
     }
 }

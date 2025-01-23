@@ -8,7 +8,7 @@
 
 package me.quickscythe.quipt.files;
 
-import me.quickscythe.quipt.api.QuiptPlugin;
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigTemplate;
 import me.quickscythe.quipt.api.config.ConfigValue;
@@ -26,7 +26,7 @@ public class TeleportationConfig extends Config {
      * @param file The file to save to
      * @param name The name of the config
      */
-    public TeleportationConfig(File file, String name, QuiptPlugin plugin) {
+    public TeleportationConfig(File file, String name, QuiptIntegration plugin) {
         super(file, name, plugin);
     }
 }

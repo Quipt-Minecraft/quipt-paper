@@ -4,8 +4,10 @@ package me.quickscythe.quipt.utils;
 import me.quickscythe.Bot;
 import me.quickscythe.api.guild.QuiptGuild;
 import me.quickscythe.api.guild.channel.QuiptTextChannel;
-import me.quickscythe.quipt.Plugin;
-import me.quickscythe.quipt.api.QuiptPlugin;
+import me.quickscythe.api.plugins.BotPlugin;
+import me.quickscythe.api.plugins.BotPluginLoader;
+import me.quickscythe.quipt.PaperIntegration;
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.ConfigManager;
 import me.quickscythe.quipt.api.discord.embed.Embed;
 import me.quickscythe.quipt.files.DiscordConfig;
@@ -32,12 +34,13 @@ public class CoreUtils {
     private static JavaPlugin plugin;
     private static ResourcePackServer packserver;
     private static File dataFolder;
-    private static QuiptPlugin quiptPlugin;
+    private static QuiptIntegration quiptPlugin;
 
 
     public static void init(JavaPlugin plugin) {
         CoreUtils.plugin = plugin;
-        CoreUtils.quiptPlugin = new Plugin();
+        CoreUtils.quiptPlugin = new PaperIntegration();
+        quiptPlugin.enable();
         logger = new Logger(plugin);
         dataFolder = plugin.getDataFolder();
         if (!dataFolder.exists()) CoreUtils.logger().log("Initializer", "Creating data folder: " + dataFolder.mkdir());
@@ -64,6 +67,19 @@ public class CoreUtils {
             logger().log("Initializer", "Starting discord bot");
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 Bot.start(discordConfig.json());
+                File folder = new File(dataFolder, "discord_bots");
+                if (!folder.exists()) folder.mkdir();
+                for(File file : folder.listFiles()){
+                    System.out.println("Checking file: " + file.getName());
+                    if(file.getName().endsWith(".jar")){
+                        System.out.println("Loading plugin: " + file.getName());
+                        BotPluginLoader loader = new BotPluginLoader();
+                        BotPlugin botPlugin = loader.registerPlugin(file);
+                        System.out.println("Enabling plugin: " + botPlugin.name());
+                        loader.enablePlugin(botPlugin);
+                        System.out.println("Plugin enabled: " + botPlugin.name());
+                    }
+                }
                 for (QuiptGuild guild : Bot.qda().getGuilds()) {
                     for (QuiptTextChannel channel : guild.getTextChannels()) {
 
@@ -96,7 +112,7 @@ public class CoreUtils {
         return packserver;
     }
 
-    public static QuiptPlugin quiptPlugin() {
+    public static QuiptIntegration quiptPlugin() {
         return quiptPlugin;
     }
 }

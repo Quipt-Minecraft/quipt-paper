@@ -5,8 +5,14 @@ import me.quickscythe.Bot;
 import me.quickscythe.api.guild.QuiptGuild;
 import me.quickscythe.api.guild.channel.QuiptTextChannel;
 import me.quickscythe.quipt.api.config.ConfigManager;
+import me.quickscythe.quipt.api.entity.QuiptPlayer;
+import me.quickscythe.quipt.api.events.QuiptPlayerChatEvent;
+import me.quickscythe.quipt.api.events.QuiptPlayerDeathEvent;
+import me.quickscythe.quipt.api.events.QuiptPlayerJoinEvent;
+import me.quickscythe.quipt.api.events.QuiptPlayerLeaveEvent;
 import me.quickscythe.quipt.files.DiscordConfig;
 import me.quickscythe.quipt.utils.CoreUtils;
+import me.quickscythe.quipt.utils.QuiptConversionUtils;
 import me.quickscythe.quipt.utils.chat.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -29,68 +35,30 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) throws IOException, NoSuchAlgorithmException {
+        QuiptPlayerJoinEvent joinEvent = new QuiptPlayerJoinEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), MessageUtils.plainText(e.joinMessage()));
+        CoreUtils.quiptPlugin().events().handle(joinEvent);
         CoreUtils.packServer().setPack(e.getPlayer());
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
-            for (QuiptGuild guild : Bot.qda().getGuilds()) {
-                for (QuiptTextChannel channel : guild.getTextChannels()) {
-                    if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
-                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.joinMessage()));
-                        }, 0L);
-                    }
-                }
-            }
-        }
+
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
-            for (QuiptGuild guild : Bot.qda().getGuilds()) {
-                for (QuiptTextChannel channel : guild.getTextChannels()) {
-                    if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
-                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.quitMessage()));
-                        }, 0L);
-                    }
-                }
-            }
-        }
+        QuiptPlayerLeaveEvent joinEvent = new QuiptPlayerLeaveEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), MessageUtils.plainText(e.quitMessage()));
+        CoreUtils.quiptPlugin().events().handle(joinEvent);
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
-            for (QuiptGuild guild : Bot.qda().getGuilds()) {
-                for (QuiptTextChannel channel : guild.getTextChannels()) {
-                    if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
-                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.deathMessage()));
-                        }, 0L);
-                    }
-                }
-            }
-        }
+        QuiptPlayerDeathEvent deathEvent = new QuiptPlayerDeathEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), QuiptConversionUtils.convertPlayer(e.getPlayer().getKiller()), MessageUtils.plainText(e.deathMessage()));
+        CoreUtils.quiptPlugin().events().handle(deathEvent);
+
     }
 
     @EventHandler
     public void onPlayerChat(AsyncChatEvent e) {
         if (e.isCancelled()) return;
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
-            for (QuiptGuild guild : Bot.qda().getGuilds()) {
-                for (QuiptTextChannel channel : guild.getTextChannels()) {
-                    if (channel.getName().equalsIgnoreCase(config.chat_message_channel) || channel.getId().equalsIgnoreCase(config.chat_message_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), ()->{
-                            channel.sendPlayerMessage(e.getPlayer().getUniqueId(), e.getPlayer().getName(), MessageUtils.plainText(e.message()));
-                        }, 0L);
-                    }
-                }
-            }
-        }
+        QuiptPlayerChatEvent chatEvent = new QuiptPlayerChatEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), MessageUtils.plainText(e.message()));
+        CoreUtils.quiptPlugin().events().handle(chatEvent);
     }
 
     @EventHandler

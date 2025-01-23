@@ -8,7 +8,7 @@
 
 package me.quickscythe.quipt.files;
 
-import me.quickscythe.quipt.api.QuiptPlugin;
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigTemplate;
 import me.quickscythe.quipt.api.config.ConfigValue;
@@ -39,7 +39,7 @@ public class ResourceConfig extends Config {
     @ConfigValue
     public String server_ip = "127.0.0.1";
 
-    public ResourceConfig(File file, String name, QuiptPlugin plugin) {
+    public ResourceConfig(File file, String name, QuiptIntegration plugin) {
         super(file, name, plugin);
     }
 }
