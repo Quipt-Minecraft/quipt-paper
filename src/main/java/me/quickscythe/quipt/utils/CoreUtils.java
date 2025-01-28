@@ -37,6 +37,10 @@ public class CoreUtils {
     private static QuiptIntegration quiptPlugin;
 
 
+    public static void preInit(){
+        //DO NOT USE BUKKIT CODE HERE. ONLY REGISTER DATA UNRELATED TO PAPER AND QUIPT INTEGRATIONS
+    }
+
     public static void init(JavaPlugin plugin) {
         CoreUtils.plugin = plugin;
         CoreUtils.quiptPlugin = new PaperIntegration();
@@ -44,6 +48,7 @@ public class CoreUtils {
         logger = new Logger(plugin);
         dataFolder = plugin.getDataFolder();
         if (!dataFolder.exists()) CoreUtils.logger().log("Initializer", "Creating data folder: " + dataFolder.mkdir());
+        HeartbeatUtils.init(plugin);
         ResourceConfig resourceConfig = ConfigManager.registerConfig(quiptPlugin, ResourceConfig.class);
         ConfigManager.registerConfig(quiptPlugin, JenkinsConfig.class);
         ConfigManager.registerConfig(quiptPlugin, HashesConfig.class);
@@ -59,7 +64,7 @@ public class CoreUtils {
             packserver.setUrl(resourceConfig.repo_url);
         }
 
-        HeartbeatUtils.init(plugin);
+
 
         LocationUtils.start(plugin);
 

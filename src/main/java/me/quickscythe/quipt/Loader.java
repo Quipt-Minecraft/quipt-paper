@@ -2,6 +2,7 @@ package me.quickscythe.quipt;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import me.quickscythe.quipt.json.SimpleJsonObject;
+import me.quickscythe.quipt.utils.CoreUtils;
 import me.quickscythe.quipt.utils.QuiptLoader;
 
 import java.io.File;
@@ -17,7 +18,6 @@ public class Loader extends QuiptLoader {
 
     @Override
     public void registerDependencies(PluginClasspathBuilder classpathBuilder) {
-
     }
 
     @Override

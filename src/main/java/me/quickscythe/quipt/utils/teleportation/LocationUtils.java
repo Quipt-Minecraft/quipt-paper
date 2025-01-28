@@ -38,7 +38,7 @@ public class LocationUtils {
             });
             return true;
         };
-        HeartbeatUtils.heartbeat().addFlutter(flutter);
+        HeartbeatUtils.heartbeat(plugin).addFlutter(flutter);
     }
 
     public static void put(TeleportationPoint point) {
