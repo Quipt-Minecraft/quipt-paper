@@ -17,6 +17,8 @@ import java.util.Scanner;
 
 public abstract class QuiptLoader implements PluginLoader {
 
+    public abstract String name();
+
     public abstract void registerDependencies(PluginClasspathBuilder classpathBuilder);
     @Override
     public void classloader(PluginClasspathBuilder classpathBuilder) {
@@ -28,7 +30,7 @@ public abstract class QuiptLoader implements PluginLoader {
             }
         }
 
-        File dependenciesFile = new File("dependencies.json");
+        File dependenciesFile = new File("dependencies-" + name() + ".json");
         SimpleJsonObject dependencies;
         if (!dependenciesFile.exists()) {
             try {

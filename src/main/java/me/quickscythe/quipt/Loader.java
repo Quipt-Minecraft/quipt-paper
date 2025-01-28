@@ -11,6 +11,11 @@ public class Loader extends QuiptLoader {
 
 
     @Override
+    public String name() {
+        return "quipt-paper";
+    }
+
+    @Override
     public void registerDependencies(PluginClasspathBuilder classpathBuilder) {
 
     }
