@@ -55,11 +55,12 @@ java {
 
 
 processResources {
-    def props = [minecraft_version: minecraft_version, author: author, name: rootProject.name, plugin_version: plugin_version]
-    inputs.properties props
+    def pluginProperties = [minecraft_version: minecraft_version, author: author, name: rootProject.name, plugin_version: plugin_version, quipt_core_version: quipt_core_version, quipt_bot_version: quipt_bot_version, json_version: json_version, jgit_version: jgit_version]
+    inputs.properties pluginProperties
     filteringCharset 'UTF-8'
+
     filesMatching('paper-plugin.yml') {
-        expand props
+        expand pluginProperties
     }
 }
 
@@ -121,3 +122,10 @@ task sendDataToUrl {
 }
 
 tasks.modrinth.dependsOn sendDataToUrl
+
+tasks.register('copyGradleProperties', Copy) {
+    from 'gradle.properties'
+    into "src/main/resources/"
+}
+
+tasks.processResources.dependsOn(copyGradleProperties)
