@@ -28,6 +28,9 @@ repositories {
 
 dependencies {
 
+    testImplementation platform("org.junit:junit-bom:$junit_version")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+
     implementation "io.papermc.paper:paper-api:${minecraft_version}-${paper_version}"
 
     implementation "me.quickscythe:quipt-core:${quipt_core_version}"
@@ -35,6 +38,11 @@ dependencies {
     implementation "org.json:json:$json_version"
     implementation "org.eclipse.jgit:org.eclipse.jgit:$jgit_version"
 }
+
+test {
+    useJUnitPlatform()
+}
+
 tasks {
     runServer {
         minecraftVersion("${minecraft_version}")
