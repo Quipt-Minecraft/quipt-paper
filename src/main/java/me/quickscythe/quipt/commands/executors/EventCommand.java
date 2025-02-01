@@ -22,6 +22,7 @@ public class EventCommand extends CommandExecutor {
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName()).executes(context -> {
+
             return 1;
         }).then(literal("start").executes(context -> {
             if (!context.getSource().getSender().hasPermission("quipt.session.start"))
