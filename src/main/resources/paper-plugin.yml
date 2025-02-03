@@ -1,7 +1,7 @@
 name: "${name}"
 version: "${plugin_version}"
-main: me.quickscythe.quipt.Initializer
 author: "${author}"
 api-version: "${minecraft_version}"
+main: me.quickscythe.quipt.Initializer
 loader: me.quickscythe.quipt.Loader
 

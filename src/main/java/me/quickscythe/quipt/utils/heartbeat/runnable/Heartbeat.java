@@ -1,7 +1,7 @@
 package me.quickscythe.quipt.utils.heartbeat.runnable;
 
 import me.quickscythe.quipt.utils.CoreUtils;
-import me.quickscythe.quipt.utils.chat.Logger;
+import me.quickscythe.quipt.utils.PaperIntegration;
 import me.quickscythe.quipt.utils.heartbeat.Flutter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,20 +13,20 @@ import java.util.Map;
 
 public class Heartbeat implements Runnable {
 
-    JavaPlugin plugin;
+    PaperIntegration plugin;
 
     private final Map<Integer, FlutterTask> FLUTTERS = new HashMap<>();
     private final List<Integer> FLUTTERS_REMOVE = new ArrayList<>();
     final List<FlutterTask> FLUTTERS_ADD = new ArrayList<>();
     private int last_id = 0;
 
-    public Heartbeat(JavaPlugin plugin) {
+    public Heartbeat(PaperIntegration plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public void run() {
-        if (plugin.isEnabled()) {
+        if (plugin.plugin().isPresent()) {
 
             for(FlutterTask task : FLUTTERS_ADD)
                 FLUTTERS.put(task.getId(), task);
@@ -38,12 +38,12 @@ public class Heartbeat implements Runnable {
             for(Map.Entry<Integer, FlutterTask> entry : FLUTTERS.entrySet()){
                 if(!entry.getValue().getFlutter().run()){
                     FLUTTERS_REMOVE.add(entry.getKey());
-                    CoreUtils.logger().log(Logger.LogLevel.ERROR, "Flutter "+entry.getKey(), "There was an error during this flutter. Removing from heartbeat.");
+                    CoreUtils.integration().logger().log("Flutter "+entry.getKey(), "There was an error during this flutter. Removing from heartbeat.");
                 }
             }
 
 
-            Bukkit.getScheduler().runTaskLater(plugin, this, 5);
+            Bukkit.getScheduler().runTaskLater(plugin.plugin().get(), this, 5);
         }
     }
 

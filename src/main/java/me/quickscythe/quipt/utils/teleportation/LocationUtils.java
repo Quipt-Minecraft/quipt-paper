@@ -1,8 +1,10 @@
 package me.quickscythe.quipt.utils.teleportation;
 
+import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.ConfigManager;
 import me.quickscythe.quipt.files.TeleportationConfig;
 import me.quickscythe.quipt.utils.CoreUtils;
+import me.quickscythe.quipt.utils.PaperIntegration;
 import me.quickscythe.quipt.utils.chat.MessageUtils;
 import me.quickscythe.quipt.utils.heartbeat.Flutter;
 import me.quickscythe.quipt.utils.heartbeat.HeartbeatUtils;
@@ -23,8 +25,9 @@ public class LocationUtils {
     private static final List<TeleportRequest> requestsRemoveQueue = new ArrayList<>();
     static TeleportationConfig config;
 
-    public static void start(JavaPlugin plugin) {
-        config = ConfigManager.registerConfig(CoreUtils.quiptPlugin(), TeleportationConfig.class);
+    public static void start(PaperIntegration integration) {
+        if(integration.plugin().isEmpty()) throw new IllegalStateException("Integration plugin is not present");
+        config = ConfigManager.registerConfig(CoreUtils.integration(), TeleportationConfig.class);
         Flutter flutter = () -> {
             requests.addAll(requestsAddQueue);
             requestsAddQueue.clear();
@@ -38,7 +41,7 @@ public class LocationUtils {
             });
             return true;
         };
-        HeartbeatUtils.heartbeat(plugin).addFlutter(flutter);
+        HeartbeatUtils.heartbeat(integration).addFlutter(flutter);
     }
 
     public static void put(TeleportationPoint point) {

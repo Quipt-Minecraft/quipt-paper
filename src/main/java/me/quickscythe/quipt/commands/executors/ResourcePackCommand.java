@@ -39,7 +39,7 @@ public class ResourcePackCommand extends CommandExecutor {
                 CoreUtils.packServer().setPack(player);
                 player.sendMessage(text("Resource pack reloaded.").color(NamedTextColor.GREEN));
             } catch (IOException | NoSuchAlgorithmException e) {
-                CoreUtils.logger().error("ResourcePackCommand", e);
+                CoreUtils.integration().logger().error("ResourcePackCommand", e);
                 sender.sendMessage(text("An error occurred while reloading the resource pack. Check the console for details.").color(NamedTextColor.RED));
             }
             return 1;

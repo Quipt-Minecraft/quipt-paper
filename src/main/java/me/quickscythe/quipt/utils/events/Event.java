@@ -45,16 +45,16 @@ public class Event {
             finalize(player);
         }
         onEnd.ifPresent(Runnable::run);
-        CoreUtils.logger().log("Event", "Event ended");
-        File file = new File(CoreUtils.dataFolder(), "events/" + startTime + ".json");
+        CoreUtils.integration().logger().log("Event", "Event ended");
+        File file = new File(CoreUtils.integration().dataFolder(), "events/" + startTime + ".json");
         if (!file.getParentFile().exists())
-            CoreUtils.logger().log("Event", "Creating Event directories: " + file.getParentFile().mkdirs());
+            CoreUtils.integration().logger().log("Event", "Creating Event directories: " + file.getParentFile().mkdirs());
         try {
             FileWriter writer = new FileWriter(file);
             writer.write(data.toString(2));
             writer.close();
         } catch (Exception e) {
-            CoreUtils.logger().error("Event", e);
+            CoreUtils.integration().logger().error("Event", e);
         }
 
 //        System.out.println(data.toString(2));

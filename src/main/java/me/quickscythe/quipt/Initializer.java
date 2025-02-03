@@ -12,9 +12,10 @@ public final class Initializer extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        CoreUtils.init(this);
 
-        CommandManager.init();
+        CoreUtils.init(new QuiptPaperIntegration(this));
+
+        CommandManager.init(this);
 
         new PlayerListener(this);
         new EventListener(this);

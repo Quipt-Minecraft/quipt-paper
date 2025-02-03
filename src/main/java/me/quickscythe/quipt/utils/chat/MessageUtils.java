@@ -20,7 +20,7 @@ import static net.kyori.adventure.text.Component.translatable;
 
 public class MessageUtils {
 
-    private static final File file = new File(CoreUtils.plugin().getDataFolder() + "/messages.json");
+    private static final File file = new File(CoreUtils.integration().dataFolder() + "/messages.json");
     private static JSONObject messages = new JSONObject();
 
     public static void start() {
@@ -28,14 +28,14 @@ public class MessageUtils {
         StringBuilder data = new StringBuilder();
         try {
             if (!file.exists())
-                CoreUtils.logger().log(Logger.LogLevel.INFO, "MessageUtils", "Creating file: " + file.createNewFile());
+                CoreUtils.integration().logger().log("MessageUtils", "Creating file: " + file.createNewFile());
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 data.append(scanner.nextLine());
             }
             scanner.close();
         } catch (IOException e) {
-            CoreUtils.logger().error("MessageUtils", e);
+            CoreUtils.integration().logger().error("MessageUtils", e);
         }
         JSONObject loaded = data.toString().isEmpty() ? new JSONObject() : new JSONObject(data.toString());
         //messages = what is in memory
@@ -59,7 +59,7 @@ public class MessageUtils {
             f2.write(messages.toString(2));
             f2.close();
         } catch (IOException e) {
-            CoreUtils.logger().error("MessageUtils", e);
+            CoreUtils.integration().logger().error("MessageUtils", e);
         }
     }
 

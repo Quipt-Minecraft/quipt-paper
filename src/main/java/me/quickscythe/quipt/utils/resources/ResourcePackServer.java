@@ -3,11 +3,11 @@ package me.quickscythe.quipt.utils.resources;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import me.quickscythe.quipt.QuiptPaperIntegration;
 import me.quickscythe.quipt.api.config.ConfigManager;
 import me.quickscythe.quipt.files.HashesConfig;
 import me.quickscythe.quipt.files.ResourceConfig;
 import me.quickscythe.quipt.utils.CoreUtils;
-import me.quickscythe.quipt.utils.chat.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
@@ -43,20 +43,23 @@ public class ResourcePackServer {
     private final HashesConfig hashData;
     private final ResourceConfig packData;
 
+    private final QuiptPaperIntegration integration;
+
     private boolean serverStarted = false;
 
     private byte[] storedHash = new byte[0];
 //    byte[] hash = new byte[0];
 
-    public ResourcePackServer() {
-        hashData = ConfigManager.getConfig(CoreUtils.quiptPlugin(), HashesConfig.class);
-        packData = ConfigManager.getConfig(CoreUtils.quiptPlugin(), ResourceConfig.class);
-        pack = new File(CoreUtils.dataFolder(), "resources/pack.zip");
-        repo = new File(CoreUtils.dataFolder(), "resources/repo/");
+    public ResourcePackServer(QuiptPaperIntegration integration) {
+        this.integration = integration;
+        hashData = ConfigManager.getConfig(integration, HashesConfig.class);
+        packData = ConfigManager.getConfig(integration, ResourceConfig.class);
+        pack = new File(integration.dataFolder(), "resources/pack.zip");
+        repo = new File(integration.dataFolder(), "resources/repo/");
         if (!pack.getParentFile().isDirectory())
-            CoreUtils.logger().log(Logger.LogLevel.INFO, "Resources", pack.getParentFile().mkdirs() ? "Set up 'pack.zip' parents." : "Couldn't set up 'pack.zip' parents.");
+            integration.logger().log("Resources", pack.getParentFile().mkdirs() ? "Set up 'pack.zip' parents." : "Couldn't set up 'pack.zip' parents.");
         if (!repo.exists())
-            CoreUtils.logger().log(Logger.LogLevel.INFO, "Resources", repo.mkdirs() ? "Set up 'repo' directory." : "Couldn't set up 'repo' directory.");
+            integration.logger().log("Resources", repo.mkdirs() ? "Set up 'repo' directory." : "Couldn't set up 'repo' directory.");
         if (pack.exists()) {
             startServer();
         }
@@ -86,18 +89,18 @@ public class ResourcePackServer {
             //sync
             sync();
         } catch (IOException | NoSuchAlgorithmException e) {
-            CoreUtils.logger().error("ResourcePackServer", e);
+            integration.logger().error("ResourcePackServer", e);
         }
     }
 
     private void sync() {
-        CoreUtils.logger().log("Resources", "Syncing resource pack.");
+        integration.logger().log("Resources", "Syncing resource pack.");
         if (repo.exists() && new File(repo, ".git").exists()) updateRepo();
         else cloneRepo();
     }
 
     private void updateRepo() {
-        CoreUtils.logger().log("Resources", "Updating resource pack.");
+        integration.logger().log("Resources", "Updating resource pack.");
         try {
             Git git = Git.open(repo);
             git.pull().call();
@@ -106,30 +109,30 @@ public class ResourcePackServer {
 
             zip(commit);
         } catch (GitAPIException | IOException e) {
-            CoreUtils.logger().error("Resources", e);
+            integration.logger().error("Resources", e);
         }
     }
 
     private void cloneRepo() {
         if (!enabled()) return;
-        CoreUtils.logger().log("Resources", "Cloning resource pack.");
+        integration.logger().log("Resources", "Cloning resource pack.");
         try {
             Git git = Git.cloneRepository().setURI(packData.repo_url).setDirectory(repo).setBranch(packData.repo_branch).call();
 
-            CoreUtils.logger().log("Resources", "Cloned resource pack.");
+            integration.logger().log("Resources", "Cloned resource pack.");
             RevCommit commit = new RevWalk(git.getRepository()).parseCommit(git.getRepository().findRef("HEAD").getObjectId());
             git.close();
             zip(commit);
         } catch (GitAPIException e) {
-            CoreUtils.logger().log("Resources", "Error cloning repository: " + e.getMessage());
-            CoreUtils.logger().error("Resources", e);
+            integration.logger().log("Resources", "Error cloning repository: " + e.getMessage());
+            integration.logger().error("Resources", e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void zip(RevCommit commit) {
-        CoreUtils.logger().log("Resources", "Zipping resource pack.");
+        integration.logger().log("Resources", "Zipping resource pack.");
         try {
             zipFolder(repo.toPath(), pack.toPath());
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -147,21 +150,21 @@ public class ResourcePackServer {
             String newCommitHash = commit.getId().getName();
 
             if (newEncryptedHash.equals(hashData.encrypted_zip_hash)) {
-                CoreUtils.logger().log("Resources", "Resource pack hash matches. Skipping update.");
+                integration.logger().log("Resources", "Resource pack hash matches. Skipping update.");
                 return;
             }
             if (hashData.commit_hash.equals(newCommitHash)) {
-                CoreUtils.logger().log("Resources", "Commit hash match. Skipping update.");
+                integration.logger().log("Resources", "Commit hash match. Skipping update.");
                 return;
             }
             storedHash = newHash;
             hashData.commit_hash = newCommitHash;
             hashData.encrypted_zip_hash = newEncryptedHash;
-            CoreUtils.logger().log("Resources", "Resource pack hash mismatch. Updating pack.");
+            integration.logger().log("Resources", "Resource pack hash mismatch. Updating pack.");
             updatePack();
         } catch (IOException | NoSuchAlgorithmException e) {
-            CoreUtils.logger().log("Resources", "Error zipping resource pack: " + e.getMessage());
-            CoreUtils.logger().error("Resources", e);
+            integration.logger().log("Resources", "Error zipping resource pack: " + e.getMessage());
+            integration.logger().error("Resources", e);
         }
     }
 
@@ -174,7 +177,7 @@ public class ResourcePackServer {
         if (!serverStarted) startServer();
         String oldUrl = packData.repo_url;
         if (!oldUrl.equals(url)) {
-            CoreUtils.logger().log("Resources", "Resource pack URL changed. Updating pack.");
+            integration.logger().log("Resources", "Resource pack URL changed. Updating pack.");
             try {
                 Files.walk(repo.toPath()).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
                 cloneRepo();

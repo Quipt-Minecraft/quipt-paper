@@ -21,12 +21,12 @@ public class QuiptPlayerListener implements Listener.QuiptPlayerJoinListener, Li
         QuiptPlayer player = event.player();
         String message = event.message();
 
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
+        DiscordConfig config = ConfigManager.getConfig(CoreUtils.integration(), DiscordConfig.class);
+        if (config.enable_bot && CoreUtils.integration().plugin().isPresent()) {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), () -> channel.sendPlayerMessage(player.uuid(), player.name(), message), 0L);
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.integration().plugin().get(), () -> channel.sendPlayerMessage(player.uuid(), player.name(), message), 0L);
                     }
                 }
             }
@@ -36,12 +36,12 @@ public class QuiptPlayerListener implements Listener.QuiptPlayerJoinListener, Li
     @Override
     public void onPlayerChat(QuiptPlayerChatEvent e) {
 
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
+        DiscordConfig config = ConfigManager.getConfig(CoreUtils.integration(), DiscordConfig.class);
+        if (config.enable_bot && CoreUtils.integration().plugin().isPresent()) {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.chat_message_channel) || channel.getId().equalsIgnoreCase(config.chat_message_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), () -> {
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.integration().plugin().get(), () -> {
                             channel.sendPlayerMessage(e.player().uuid(), e.player().name(), e.message());
                         }, 0L);
                     }
@@ -52,12 +52,12 @@ public class QuiptPlayerListener implements Listener.QuiptPlayerJoinListener, Li
 
     @Override
     public void onPlayerLeave(QuiptPlayerLeaveEvent e) {
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
+        DiscordConfig config = ConfigManager.getConfig(CoreUtils.integration(), DiscordConfig.class);
+        if (config.enable_bot && CoreUtils.integration().plugin().isPresent()) {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), () -> {
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.integration().plugin().get(), () -> {
                             channel.sendPlayerMessage(e.player().uuid(), e.player().name(), e.message());
                         }, 0L);
                     }
@@ -68,12 +68,12 @@ public class QuiptPlayerListener implements Listener.QuiptPlayerJoinListener, Li
 
     @Override
     public void onPlayerDeath(QuiptPlayerDeathEvent e) {
-        DiscordConfig config = ConfigManager.getConfig(CoreUtils.quiptPlugin(), DiscordConfig.class);
-        if (config.enable_bot) {
+        DiscordConfig config = ConfigManager.getConfig(CoreUtils.integration(), DiscordConfig.class);
+        if (config.enable_bot && CoreUtils.integration().plugin().isPresent()) {
             for (QuiptGuild guild : Bot.qda().getGuilds()) {
                 for (QuiptTextChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase(config.player_status_channel) || channel.getId().equalsIgnoreCase(config.player_status_channel)) {
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.plugin(), () -> {
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreUtils.integration().plugin().get(), () -> {
                             channel.sendPlayerMessage(e.player().uuid(), e.player().name(), e.message());
                         }, 0L);
                     }

@@ -30,6 +30,9 @@ dependencies {
 
     testImplementation platform("org.junit:junit-bom:$junit_version")
     testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation 'org.mockito:mockito-inline:5.0.0'
+    testImplementation "ch.qos.logback:logback-classic:$logback_version"
+
 
     implementation "io.papermc.paper:paper-api:${minecraft_version}-${paper_version}"
 

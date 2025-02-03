@@ -36,7 +36,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) throws IOException, NoSuchAlgorithmException {
         QuiptPlayerJoinEvent joinEvent = new QuiptPlayerJoinEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), MessageUtils.plainText(e.joinMessage()));
-        CoreUtils.quiptPlugin().events().handle(joinEvent);
+        CoreUtils.integration().events().handle(joinEvent);
         CoreUtils.packServer().setPack(e.getPlayer());
 
     }
@@ -44,13 +44,13 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
         QuiptPlayerLeaveEvent joinEvent = new QuiptPlayerLeaveEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), MessageUtils.plainText(e.quitMessage()));
-        CoreUtils.quiptPlugin().events().handle(joinEvent);
+        CoreUtils.integration().events().handle(joinEvent);
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         QuiptPlayerDeathEvent deathEvent = new QuiptPlayerDeathEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), QuiptConversionUtils.convertPlayer(e.getPlayer().getKiller()), MessageUtils.plainText(e.deathMessage()));
-        CoreUtils.quiptPlugin().events().handle(deathEvent);
+        CoreUtils.integration().events().handle(deathEvent);
 
     }
 
@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
     public void onPlayerChat(AsyncChatEvent e) {
         if (e.isCancelled()) return;
         QuiptPlayerChatEvent chatEvent = new QuiptPlayerChatEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), MessageUtils.plainText(e.message()));
-        CoreUtils.quiptPlugin().events().handle(chatEvent);
+        CoreUtils.integration().events().handle(chatEvent);
     }
 
     @EventHandler

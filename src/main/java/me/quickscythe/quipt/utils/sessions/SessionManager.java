@@ -64,7 +64,7 @@ public class SessionManager {
             }
         }
         CURRENT_SESSIONS.put(player.getUniqueId(), session);
-        CoreUtils.logger().log("Session", "Started session for " + player.getName());
+        CoreUtils.integration().logger().log("Session", "Started session for " + player.getName());
     }
 
     public static void finishSession(Player player) {
@@ -112,7 +112,7 @@ public class SessionManager {
         config.sessions.getJSONArray(player.getUniqueId().toString()).put(session);
         CURRENT_SESSIONS.remove(player.getUniqueId());
         config.save();
-        CoreUtils.logger().log("Session", "Finished session for " + player.getName());
+        CoreUtils.integration().logger().log("Session", "Finished session for " + player.getName());
     }
 
     public static long getOverallPlaytime(Player player) {
