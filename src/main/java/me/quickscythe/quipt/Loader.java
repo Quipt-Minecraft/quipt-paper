@@ -23,7 +23,6 @@ public class Loader implements PluginLoader {
     public void classloader(PluginClasspathBuilder classpathBuilder) {
         File dependenciesFolder = new File("dependencies/quipt-paper");
         if (!dependenciesFolder.exists()) dependenciesFolder.mkdirs();
-//        File propertiesFile = new File(dependenciesFolder, "gradle.properties");
         Properties properties = new Properties();
         try {
             properties.load(getClass().getResourceAsStream("/gradle.properties"));

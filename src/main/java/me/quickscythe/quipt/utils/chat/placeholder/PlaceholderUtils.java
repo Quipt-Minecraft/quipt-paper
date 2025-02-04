@@ -4,18 +4,19 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 public class PlaceholderUtils {
 
     static Map<String, PlaceholderWorker> placeholders = new HashMap<>();
 
     public static void registerPlaceholders() {
-        registerPlaceholder("name", Player::getName);
-        registerPlaceholder("player", Player::getName);
+        registerPlaceholder("name", (player)-> player.map(Player::getName).orElse("Unknown"));
         registerPlaceholder("online", (player) -> Bukkit.getOnlinePlayers().size() + "");
 
 
@@ -25,19 +26,19 @@ public class PlaceholderUtils {
         placeholders.put("%" + key + "%", worker);
     }
 
-    public static Component replace(Player player, Component component) {
+    public static Component replace(@Nullable Player player, Component component) {
         return component.replaceText(builder -> {
             for(Entry<String, PlaceholderWorker> e : placeholders.entrySet()){
-                builder.match(e.getKey()).replacement(e.getValue().run(player));
+                builder.match(e.getKey()).replacement(e.getValue().run(Optional.ofNullable(player)));
             }
         });
     }
 
-    public static String replace(Player player, String string) {
+    public static String replace(@Nullable Player player, String string) {
 
         for (Entry<String, PlaceholderWorker> e : placeholders.entrySet()) {
             if (string.contains(e.getKey())) {
-                string = string.replaceAll(e.getKey(), e.getValue().run(player));
+                string = string.replaceAll(e.getKey(), e.getValue().run(Optional.ofNullable(player)));
             }
         }
 
@@ -74,7 +75,9 @@ public class PlaceholderUtils {
     @FunctionalInterface
     public interface PlaceholderWorker {
 
-        public abstract String run(Player player);
+        String run(Optional<Player> player);
+
+
 
     }
 

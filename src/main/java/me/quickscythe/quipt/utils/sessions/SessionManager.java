@@ -30,7 +30,7 @@ public class SessionManager {
         return CURRENT_SESSIONS.getOrDefault(player.getUniqueId(), null);
     }
 
-    public static Config getConfig() {
+    public static SessionConfig getConfig() {
         return config;
     }
 
