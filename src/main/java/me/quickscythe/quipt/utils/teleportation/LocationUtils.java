@@ -97,11 +97,11 @@ public class LocationUtils {
         return r;
     }
 
-    public static void request(Player requester, Player target) {
+    public static TeleportRequest request(Player requester, Player target) {
         TeleportRequest request = new TeleportRequest(requester, target);
         request.send();
         requestsAddQueue.add(request);
-
+        return request;
     }
 
     public static List<TeleportRequest> requests() {

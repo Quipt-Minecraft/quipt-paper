@@ -24,14 +24,18 @@ repositories {
         name = "quipt"
         url = "https://repo.vanillaflux.com/repository/quipt/"
     }
+
+
 }
 
 dependencies {
 
     testImplementation platform("org.junit:junit-bom:$junit_version")
     testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation 'org.mockito:mockito-inline:5.0.0'
     testImplementation "ch.qos.logback:logback-classic:$logback_version"
+    testImplementation "com.github.seeseemelk:MockBukkit-v1.21:3.133.2"
+    testImplementation "org.mockito:mockito-core:5.0.0"
+    testImplementation "org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT"
 
 
     implementation "io.papermc.paper:paper-api:${minecraft_version}-${paper_version}"

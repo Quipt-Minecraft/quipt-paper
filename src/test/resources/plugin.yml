@@ -1,0 +1,3 @@
+name: QuiptBukkitTest
+version: alphav0.1
+main: me.quickscythe.quipt.tests.objects.BukkitConverterIntegration

@@ -20,10 +20,11 @@ import static net.kyori.adventure.text.Component.translatable;
 
 public class MessageUtils {
 
-    private static final File file = new File(CoreUtils.integration().dataFolder() + "/messages.json");
+    private static File file;
     private static JSONObject messages = new JSONObject();
 
     public static void start() {
+        file = new File(CoreUtils.integration().dataFolder() + "/messages.json");
         createDefaultMessages();
         StringBuilder data = new StringBuilder();
         try {
