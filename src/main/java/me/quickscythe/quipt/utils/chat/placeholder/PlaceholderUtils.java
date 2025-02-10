@@ -1,34 +1,32 @@
 package me.quickscythe.quipt.utils.chat.placeholder;
 
+import me.quickscythe.quipt.api.registries.Registries;
+import me.quickscythe.quipt.api.registries.Registry;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
 public class PlaceholderUtils {
 
-    static Map<String, PlaceholderWorker> placeholders = new HashMap<>();
+    private static final Registry<Placeholder> registry = Registries.add("placeholders", new Registry<>());
 
     public static void registerPlaceholders() {
-        registerPlaceholder("name", (player)-> player.map(Player::getName).orElse("Unknown"));
+        registerPlaceholder("name", (player) -> player.map(Player::getName).orElse("Unknown"));
         registerPlaceholder("online", (player) -> Bukkit.getOnlinePlayers().size() + "");
-
-
     }
 
-    public static void registerPlaceholder(String key, PlaceholderWorker worker) {
-        placeholders.put("%" + key + "%", worker);
+    public static void registerPlaceholder(String key, Placeholder worker) {
+        registry.register("%" + key + "%", worker);
     }
 
     public static Component replace(@Nullable Player player, Component component) {
         return component.replaceText(builder -> {
-            for(Entry<String, PlaceholderWorker> e : placeholders.entrySet()){
+            for (Entry<String, Placeholder> e : registry.toMap().entrySet()) {
                 builder.match(e.getKey()).replacement(e.getValue().run(Optional.ofNullable(player)));
             }
         });
@@ -36,7 +34,7 @@ public class PlaceholderUtils {
 
     public static String replace(@Nullable Player player, String string) {
 
-        for (Entry<String, PlaceholderWorker> e : placeholders.entrySet()) {
+        for (Entry<String, Placeholder> e : registry.toMap().entrySet()) {
             if (string.contains(e.getKey())) {
                 string = string.replaceAll(e.getKey(), e.getValue().run(Optional.ofNullable(player)));
             }
@@ -73,12 +71,7 @@ public class PlaceholderUtils {
     }
 
     @FunctionalInterface
-    public interface PlaceholderWorker {
-
+    public interface Placeholder {
         String run(Optional<Player> player);
-
-
-
     }
-
 }

@@ -6,17 +6,16 @@
  * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
-package me.quickscythe.quipt.files;
+package me.quickscythe.quipt.files.resource;
 
 import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigTemplate;
 import me.quickscythe.quipt.api.config.ConfigValue;
-
-import java.io.File;
+import me.quickscythe.quipt.api.config.NestedConfig;
 
 @ConfigTemplate(name = "hashes")
-public class HashesConfig extends Config {
+public class HashesNestedConfig<T extends Config> extends NestedConfig<T> {
 
     @ConfigValue
     public String encrypted_zip_hash = "";
@@ -24,7 +23,8 @@ public class HashesConfig extends Config {
     @ConfigValue
     public String commit_hash = "";
 
-    public HashesConfig(File file, String name, QuiptIntegration plugin) {
-        super(file, name, plugin);
+
+    public HashesNestedConfig(T parent, String name, QuiptIntegration integration) {
+        super(parent, name, integration);
     }
 }

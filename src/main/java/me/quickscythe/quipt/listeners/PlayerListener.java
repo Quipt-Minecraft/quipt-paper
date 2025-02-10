@@ -1,20 +1,13 @@
 package me.quickscythe.quipt.listeners;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.quickscythe.Bot;
-import me.quickscythe.api.guild.QuiptGuild;
-import me.quickscythe.api.guild.channel.QuiptTextChannel;
-import me.quickscythe.quipt.api.config.ConfigManager;
-import me.quickscythe.quipt.api.entity.QuiptPlayer;
 import me.quickscythe.quipt.api.events.QuiptPlayerChatEvent;
 import me.quickscythe.quipt.api.events.QuiptPlayerDeathEvent;
 import me.quickscythe.quipt.api.events.QuiptPlayerJoinEvent;
 import me.quickscythe.quipt.api.events.QuiptPlayerLeaveEvent;
-import me.quickscythe.quipt.files.DiscordConfig;
 import me.quickscythe.quipt.utils.CoreUtils;
 import me.quickscythe.quipt.utils.QuiptConversionUtils;
 import me.quickscythe.quipt.utils.chat.MessageUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -37,7 +30,8 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) throws IOException, NoSuchAlgorithmException {
         QuiptPlayerJoinEvent joinEvent = new QuiptPlayerJoinEvent(QuiptConversionUtils.convertPlayer(e.getPlayer()), MessageUtils.plainText(e.joinMessage()));
         CoreUtils.integration().events().handle(joinEvent);
-        CoreUtils.packServer().setPack(e.getPlayer());
+        if (CoreUtils.packHandler() != null)
+            CoreUtils.packHandler().setPack(e.getPlayer());
 
     }
 

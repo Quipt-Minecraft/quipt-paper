@@ -30,7 +30,7 @@ public class JenkinsConfig extends Config {
     @ConfigValue
     public String api_endpoint = "/api/json";
 
-    public JenkinsConfig(File file, String name, QuiptIntegration plugin) {
-        super(file, name, plugin);
+    public JenkinsConfig(File file, String name, ConfigTemplate.Extension extension, QuiptIntegration integration) {
+        super(file, name, extension, integration);
     }
 }

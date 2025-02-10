@@ -43,6 +43,8 @@ dependencies {
     implementation "me.quickscythe:quipt-bot:${quipt_bot_version}"
     implementation "org.json:json:$json_version"
     implementation "org.eclipse.jgit:org.eclipse.jgit:$jgit_version"
+    implementation "org.eclipse.jetty:jetty-server:$jetty_server_version"
+    implementation "org.eclipse.jetty:jetty-servlet:$jetty_servlet_version"
 }
 
 test {

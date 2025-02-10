@@ -1,6 +1,5 @@
 package me.quickscythe.quipt.utils.teleportation;
 
-import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.ConfigManager;
 import me.quickscythe.quipt.files.TeleportationConfig;
 import me.quickscythe.quipt.utils.CoreUtils;
@@ -12,7 +11,6 @@ import me.quickscythe.quipt.utils.teleportation.points.TeleportationPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -134,20 +132,20 @@ public class LocationUtils {
 
 
         public void send() {
-            requester.sendMessage(MessageUtils.getMessage("quipt.tpr.sent.requester", target.getName()));
-            target.sendMessage(MessageUtils.getMessage("quipt.tpr.sent.target", requester.getName()));
+            requester.sendMessage(MessageUtils.get("quipt.tpr.sent.requester", target.getName()));
+            target.sendMessage(MessageUtils.get("quipt.tpr.sent.target", requester.getName()));
         }
 
         public void accept() {
-            requester.sendMessage(MessageUtils.getMessage("quipt.tpr.accepted.requester", target.getName()));
-            target.sendMessage(MessageUtils.getMessage("quipt.tpr.accepted.target", requester.getName()));
+            requester.sendMessage(MessageUtils.get("quipt.tpr.accepted.requester", target.getName()));
+            target.sendMessage(MessageUtils.get("quipt.tpr.accepted.target", requester.getName()));
             requester.teleport(target);
             LocationUtils.requestsRemoveQueue.add(this);
         }
 
         public void deny() {
-            requester.sendMessage(MessageUtils.getMessage("quipt.tpr.denied.requester", target.getName()));
-            target.sendMessage(MessageUtils.getMessage("quipt.tpr.denied.target", requester.getName()));
+            requester.sendMessage(MessageUtils.get("quipt.tpr.denied.requester", target.getName()));
+            target.sendMessage(MessageUtils.get("quipt.tpr.denied.target", requester.getName()));
             LocationUtils.requestsRemoveQueue.add(this);
         }
     }

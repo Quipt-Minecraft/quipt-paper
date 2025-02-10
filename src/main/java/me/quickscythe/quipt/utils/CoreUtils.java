@@ -1,21 +1,18 @@
 package me.quickscythe.quipt.utils;
 
 
+import com.sun.management.OperatingSystemMXBean;
 import me.quickscythe.quipt.QuiptPaperIntegration;
-import me.quickscythe.quipt.api.QuiptIntegration;
-import me.quickscythe.quipt.api.config.ConfigManager;
-import me.quickscythe.quipt.files.ResourceConfig;
-import me.quickscythe.quipt.utils.resources.ResourcePackServer;
-import org.bukkit.plugin.java.JavaPlugin;
+import me.quickscythe.quipt.web.handlers.ResourcePackHandler;
 
-import java.io.File;
+import java.lang.management.ManagementFactory;
 
 public class CoreUtils {
 
     private static QuiptPaperIntegration integration;
 
 
-    public static void preInit(){
+    public static void preInit() {
         //DO NOT USE BUKKIT CODE HERE. ONLY REGISTER DATA UNRELATED TO PAPER AND QUIPT INTEGRATIONS
     }
 
@@ -32,7 +29,11 @@ public class CoreUtils {
         return integration;
     }
 
-    public static ResourcePackServer packServer() {
-        return integration().packServer();
+    public static double getCPUUsage() {
+        return ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class).getProcessCpuLoad() * 100;
+    }
+
+    public static ResourcePackHandler packHandler() {
+        return integration().packHandler();
     }
 }

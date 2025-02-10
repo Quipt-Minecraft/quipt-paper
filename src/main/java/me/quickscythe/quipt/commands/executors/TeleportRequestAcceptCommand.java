@@ -27,7 +27,7 @@ public class TeleportRequestAcceptCommand extends CommandExecutor {
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName()).executes(context -> {
-            if(!(context.getSource().getSender() instanceof Player player)) return logError(context, MessageUtils.getMessage("cmd.error.player_only"));
+            if(!(context.getSource().getSender() instanceof Player player)) return logError(context, MessageUtils.get("cmd.error.player_only"));
             for(LocationUtils.TeleportRequest request : LocationUtils.requests()){
                 if(request.target().equals(player)){
                     request.accept();

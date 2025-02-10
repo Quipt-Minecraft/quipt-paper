@@ -1,13 +1,12 @@
-package me.quickscythe.quipt.utils.resources;
+package me.quickscythe.quipt.web.handlers;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-import me.quickscythe.quipt.QuiptPaperIntegration;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import me.quickscythe.quipt.api.config.ConfigManager;
-import me.quickscythe.quipt.files.HashesConfig;
+import me.quickscythe.quipt.api.server.QuiptServer;
+import me.quickscythe.quipt.api.server.QuiptServlet;
 import me.quickscythe.quipt.files.ResourceConfig;
-import me.quickscythe.quipt.utils.CoreUtils;
+import me.quickscythe.quipt.files.WebConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
@@ -18,15 +17,10 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
@@ -35,46 +29,33 @@ import java.util.zip.ZipOutputStream;
 
 import static net.kyori.adventure.text.Component.text;
 
-public class ResourcePackServer {
+public class ResourcePackHandler extends QuiptServlet {
+
 
     private final File pack;
     private final File repo;
-
-    private final HashesConfig hashData;
     private final ResourceConfig packData;
 
-    private final QuiptPaperIntegration integration;
-
     private boolean serverStarted = false;
-
     private byte[] storedHash = new byte[0];
-//    byte[] hash = new byte[0];
 
-    public ResourcePackServer(QuiptPaperIntegration integration) {
-        this.integration = integration;
-        hashData = ConfigManager.getConfig(integration, HashesConfig.class);
-        packData = ConfigManager.getConfig(integration, ResourceConfig.class);
-        pack = new File(integration.dataFolder(), "resources/pack.zip");
-        repo = new File(integration.dataFolder(), "resources/repo/");
+    public ResourcePackHandler(QuiptServer server) {
+        super(server);
+
+        packData = ConfigManager.getConfig(server.integration(), ResourceConfig.class);
+        pack = new File(server.integration().dataFolder(), "resources/pack.zip");
+        repo = new File(server.integration().dataFolder(), "resources/repo/");
         if (!pack.getParentFile().isDirectory())
-            integration.logger().log("Resources", pack.getParentFile().mkdirs() ? "Set up 'pack.zip' parents." : "Couldn't set up 'pack.zip' parents.");
+            server.integration().logger().log(pack.getParentFile().mkdirs() ? "Set up 'pack.zip' parents." : "Couldn't set up 'pack.zip' parents.");
         if (!repo.exists())
-            integration.logger().log("Resources", repo.mkdirs() ? "Set up 'repo' directory." : "Couldn't set up 'repo' directory.");
+            server.integration().logger().log(repo.mkdirs() ? "Set up 'repo' directory." : "Couldn't set up 'repo' directory.");
         if (pack.exists()) {
-            startServer();
+            start();
         }
     }
 
-    private void startServer() {
+    public void start() {
         try {
-
-            //Setup server
-            HttpServer server = HttpServer.create(new InetSocketAddress(packData.server_port), 0);
-            server.createContext("/resources.zip", new ResourcePackHandler(this));
-            server.createContext("/update", new ResourcePackUpdater(this));
-            server.setExecutor(null);
-            server.start();
-
             if (!pack.exists()) pack.createNewFile();
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
             try (InputStream in = Files.newInputStream(pack.toPath())) {
@@ -86,21 +67,20 @@ public class ResourcePackServer {
             }
             storedHash = digest.digest();
             serverStarted = true;
-            //sync
             sync();
         } catch (IOException | NoSuchAlgorithmException e) {
-            integration.logger().error("ResourcePackServer", e);
+            server().integration().logger().error("Error starting resource pack server", e);
         }
     }
 
-    private void sync() {
-        integration.logger().log("Resources", "Syncing resource pack.");
+    public void sync() {
+        server().integration().logger().log("Syncing resource pack.");
         if (repo.exists() && new File(repo, ".git").exists()) updateRepo();
         else cloneRepo();
     }
 
     private void updateRepo() {
-        integration.logger().log("Resources", "Updating resource pack.");
+        server().integration().logger().log("Updating resource pack.");
         try {
             Git git = Git.open(repo);
             git.pull().call();
@@ -109,30 +89,29 @@ public class ResourcePackServer {
 
             zip(commit);
         } catch (GitAPIException | IOException e) {
-            integration.logger().error("Resources", e);
+            server().integration().logger().error("There was an error updating the repo", e);
         }
     }
 
     private void cloneRepo() {
         if (!enabled()) return;
-        integration.logger().log("Resources", "Cloning resource pack.");
+        server().integration().logger().log("Cloning resource pack.");
         try {
             Git git = Git.cloneRepository().setURI(packData.repo_url).setDirectory(repo).setBranch(packData.repo_branch).call();
 
-            integration.logger().log("Resources", "Cloned resource pack.");
+            server().integration().logger().log("Cloned resource pack.");
             RevCommit commit = new RevWalk(git.getRepository()).parseCommit(git.getRepository().findRef("HEAD").getObjectId());
             git.close();
             zip(commit);
         } catch (GitAPIException e) {
-            integration.logger().log("Resources", "Error cloning repository: " + e.getMessage());
-            integration.logger().error("Resources", e);
+            server().integration().logger().error("Error cloning repository", e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void zip(RevCommit commit) {
-        integration.logger().log("Resources", "Zipping resource pack.");
+        server().integration().logger().log("Zipping resource pack.");
         try {
             zipFolder(repo.toPath(), pack.toPath());
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -149,22 +128,22 @@ public class ResourcePackServer {
 
             String newCommitHash = commit.getId().getName();
 
-            if (newEncryptedHash.equals(hashData.encrypted_zip_hash)) {
-                integration.logger().log("Resources", "Resource pack hash matches. Skipping update.");
+            if (newEncryptedHash.equals(packData.hashes.encrypted_zip_hash)) {
+                server().integration().logger().log("Resource pack hash matches. Skipping update.");
                 return;
             }
-            if (hashData.commit_hash.equals(newCommitHash)) {
-                integration.logger().log("Resources", "Commit hash match. Skipping update.");
+            if (packData.hashes.commit_hash.equals(newCommitHash)) {
+                server().integration().logger().log("Commit hash match. Skipping update.");
                 return;
             }
             storedHash = newHash;
-            hashData.commit_hash = newCommitHash;
-            hashData.encrypted_zip_hash = newEncryptedHash;
-            integration.logger().log("Resources", "Resource pack hash mismatch. Updating pack.");
+            packData.hashes.commit_hash = newCommitHash;
+            packData.hashes.encrypted_zip_hash = newEncryptedHash;
+            packData.save();
+            server().integration().logger().log("Resource pack hash mismatch. Updating pack.");
             updatePack();
         } catch (IOException | NoSuchAlgorithmException e) {
-            integration.logger().log("Resources", "Error zipping resource pack: " + e.getMessage());
-            integration.logger().error("Resources", e);
+            server().integration().logger().error("Error zipping resource pack", e);
         }
     }
 
@@ -174,10 +153,10 @@ public class ResourcePackServer {
 
     public void setUrl(String url) {
         if (url.isEmpty()) return;
-        if (!serverStarted) startServer();
+        if (!serverStarted) start();
         String oldUrl = packData.repo_url;
         if (!oldUrl.equals(url)) {
-            integration.logger().log("Resources", "Resource pack URL changed. Updating pack.");
+            server().integration().logger().log("Resources", "Resource pack URL changed. Updating pack.");
             try {
                 Files.walk(repo.toPath()).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
                 cloneRepo();
@@ -190,7 +169,7 @@ public class ResourcePackServer {
     }
 
     public void updatePack() {
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             Component msg = text("Resource pack updated. Click here to reload.").color(TextColor.color(0x49DFFF));
             msg = msg.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/resourcepack reload"));
             player.sendMessage(msg);
@@ -203,9 +182,10 @@ public class ResourcePackServer {
 
     public void setPack(Player player) throws IOException, NoSuchAlgorithmException {
         if (!enabled()) return;
-        String url = "http://" + packData.server_ip + ":" + packData.server_port + "/resources.zip";
+        WebConfig webConfig = ConfigManager.getConfig(server().integration(), WebConfig.class);
+        String url = "http://" + webConfig.host + ":" + webConfig.port + "/resources/pack.zip";
 
-        player.setResourcePack(url, storedHash, text("This pack is required for the best experience on this server."));
+        player.setResourcePack(url, storedHash, text("This pack is required for the best experience on this server.", TextColor.color(0x22E3DF)));
     }
 
     private void zipFolder(Path sourceFolderPath, Path zipPath) throws IOException {
@@ -223,43 +203,34 @@ public class ResourcePackServer {
         }
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        doGet(req, resp);
+    }
 
-    static class ResourcePackHandler implements HttpHandler {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        private final ResourcePackServer server;
+        String uri = req.getRequestURI().toLowerCase();
+        uri = uri.replaceFirst("/resources/", "");
 
-        public ResourcePackHandler(ResourcePackServer server) {
-            this.server = server;
+        if (uri.equalsIgnoreCase("pack.zip")) {
+//            resp.setContentType("application/zip");
+//            resp.setHeader("Content-Disposition", "attachment; filename=\"" + packServer().pack().getName() + "\"");
+            resp.setContentLengthLong(pack().length());
+
+            try (FileInputStream fis = new FileInputStream(pack()); OutputStream os = resp.getOutputStream()) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+            }
         }
-
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String filePath = server.pack().getPath(); // Update this path to your file
-            byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
-
-            // Set the response headers and status code
-            exchange.sendResponseHeaders(200, fileBytes.length);
-
-            // Write the file bytes to the response body
-            OutputStream os = exchange.getResponseBody();
-            os.write(fileBytes);
-            os.close();
+        if (uri.toLowerCase().startsWith("update")) {
+            sync();
         }
     }
 
-    static class ResourcePackUpdater implements HttpHandler {
 
-        private final ResourcePackServer server;
-
-        public ResourcePackUpdater(ResourcePackServer server) {
-            this.server = server;
-        }
-
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            server.sync();
-        }
-    }
 }

@@ -12,10 +12,12 @@ import me.quickscythe.quipt.api.QuiptIntegration;
 import me.quickscythe.quipt.api.config.Config;
 import me.quickscythe.quipt.api.config.ConfigTemplate;
 import me.quickscythe.quipt.api.config.ConfigValue;
+import me.quickscythe.quipt.files.resource.AuthNestedConfig;
+import me.quickscythe.quipt.files.resource.HashesNestedConfig;
 
 import java.io.File;
 
-@ConfigTemplate(name = "resources")
+@ConfigTemplate(name = "resources",ext = ConfigTemplate.Extension.YAML)
 public class ResourceConfig extends Config {
 
     @ConfigValue
@@ -25,21 +27,13 @@ public class ResourceConfig extends Config {
     public String repo_branch = "main";
 
     @ConfigValue
-    public boolean is_private = false;
+    public AuthNestedConfig<ResourceConfig> auth = null;
 
     @ConfigValue
-    public String repo_username = "user";
+    public HashesNestedConfig<ResourceConfig> hashes = null;
 
-    @ConfigValue
-    public String repo_password = "pass";
 
-    @ConfigValue
-    public int server_port = 9009;
-
-    @ConfigValue
-    public String server_ip = "127.0.0.1";
-
-    public ResourceConfig(File file, String name, QuiptIntegration plugin) {
-        super(file, name, plugin);
+    public ResourceConfig(File file, String name, ConfigTemplate.Extension extension, QuiptIntegration integration) {
+        super(file, name, extension, integration);
     }
 }

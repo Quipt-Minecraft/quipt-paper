@@ -33,7 +33,7 @@ public class TeleportRequestCommand extends CommandExecutor {
         return literal(getName()).executes(context -> showUsage(context, "quipt.cmd.teleportrequest"))
                 .then(argument("player", ArgumentTypes.player())
                         .executes(context -> {
-                            if(!(context.getSource().getSender() instanceof Player player)) return logError(context, MessageUtils.getMessage("cmd.error.player_only"));
+                            if(!(context.getSource().getSender() instanceof Player player)) return logError(context, MessageUtils.get("cmd.error.player_only"));
                             PlayerSelectorArgumentResolver targetSelector = context.getArgument("player", PlayerSelectorArgumentResolver.class);
                             targetSelector.resolve(context.getSource()).forEach(target -> {
                                 LocationUtils.request(player, target);

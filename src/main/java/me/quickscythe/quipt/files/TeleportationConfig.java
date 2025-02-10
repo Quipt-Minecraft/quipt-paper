@@ -22,11 +22,12 @@ public class TeleportationConfig extends Config {
     @ConfigValue
     public JSONObject locations = new JSONObject();
 
+    public TeleportationConfig(File file, String name, ConfigTemplate.Extension extension, QuiptIntegration integration) {
+        super(file, name, extension, integration);
+    }
+
     /**
      * @param file The file to save to
      * @param name The name of the config
      */
-    public TeleportationConfig(File file, String name, QuiptIntegration plugin) {
-        super(file, name, plugin);
-    }
 }

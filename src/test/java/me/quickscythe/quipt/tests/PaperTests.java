@@ -41,10 +41,10 @@ public class PaperTests {
     void testConfigs() {
         assertNotNull(ConfigManager.getConfig(paperIntegration, ResourceConfig.class));
         assertNotNull(ConfigManager.getConfig(paperIntegration, DiscordConfig.class));
-        assertNotNull(ConfigManager.getConfig(paperIntegration, HashesConfig.class));
         assertNotNull(ConfigManager.getConfig(paperIntegration, JenkinsConfig.class));
         assertNotNull(ConfigManager.getConfig(paperIntegration, SessionConfig.class));
         assertNotNull(ConfigManager.getConfig(paperIntegration, TeleportationConfig.class));
+        assertNotNull(ConfigManager.getConfig(paperIntegration, WebConfig.class));
     }
 
     @Test

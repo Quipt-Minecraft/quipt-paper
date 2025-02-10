@@ -22,12 +22,13 @@ public class SessionConfig extends Config {
     @ConfigValue
     public JSONObject sessions = new JSONObject();
 
+    public SessionConfig(File file, String name, ConfigTemplate.Extension extension, QuiptIntegration integration) {
+        super(file, name, extension, integration);
+    }
+
 
     /**
      * @param file The file to save to
      * @param name The name of the config
      */
-    public SessionConfig(File file, String name, QuiptIntegration plugin) {
-        super(file, name, plugin);
-    }
 }

@@ -33,7 +33,7 @@ public class DiscordConfig extends Config {
     @ConfigValue
     public String chat_message_channel = "none";
 
-    public DiscordConfig(File file, String name, QuiptIntegration plugin) {
-        super(file, name, plugin);
+    public DiscordConfig(File file, String name, ConfigTemplate.Extension extension, QuiptIntegration integration) {
+        super(file, name, extension, integration);
     }
 }

@@ -28,15 +28,15 @@ public class ResourcePackCommand extends CommandExecutor {
     @Override
     public LiteralCommandNode<CommandSourceStack> execute() {
         return literal(getName()).executes(context -> showUsage(context, "quipt.admin.resourcepack")).then(literal("update").executes(context -> {
-            CoreUtils.packServer().updatePack();
+            CoreUtils.packHandler().updatePack();
             return 1;
         })).then(literal("reload").executes(context -> {
             CommandSender sender = context.getSource().getSender();
 
             if (!(sender instanceof Player player))
-                return logError(sender, MessageUtils.getMessage("cmd.error.player_only"));
+                return logError(sender, MessageUtils.get("cmd.error.player_only"));
             try {
-                CoreUtils.packServer().setPack(player);
+                CoreUtils.packHandler().setPack(player);
                 player.sendMessage(text("Resource pack reloaded.").color(NamedTextColor.GREEN));
             } catch (IOException | NoSuchAlgorithmException e) {
                 CoreUtils.integration().logger().error("ResourcePackCommand", e);

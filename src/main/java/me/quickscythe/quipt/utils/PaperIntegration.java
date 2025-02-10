@@ -1,34 +1,15 @@
 package me.quickscythe.quipt.utils;
 
-import me.quickscythe.Bot;
-import me.quickscythe.api.guild.QuiptGuild;
-import me.quickscythe.api.guild.channel.QuiptTextChannel;
-import me.quickscythe.api.plugins.BotPlugin;
-import me.quickscythe.api.plugins.BotPluginLoader;
 import me.quickscythe.quipt.api.QuiptIntegration;
-import me.quickscythe.quipt.api.config.ConfigManager;
-import me.quickscythe.quipt.api.discord.embed.Embed;
-import me.quickscythe.quipt.files.DiscordConfig;
-import me.quickscythe.quipt.files.HashesConfig;
-import me.quickscythe.quipt.files.JenkinsConfig;
-import me.quickscythe.quipt.files.ResourceConfig;
 import me.quickscythe.quipt.listeners.quipt.QuiptPlayerListener;
-import me.quickscythe.quipt.utils.chat.MessageUtils;
-import me.quickscythe.quipt.utils.chat.placeholder.PlaceholderUtils;
-import me.quickscythe.quipt.utils.events.EventManager;
 import me.quickscythe.quipt.utils.heartbeat.HeartbeatUtils;
-import me.quickscythe.quipt.utils.resources.ResourcePackServer;
-import me.quickscythe.quipt.utils.sessions.SessionManager;
-import me.quickscythe.quipt.utils.teleportation.LocationUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.io.File;
 import java.util.Optional;
 
-public class PaperIntegration extends QuiptIntegration {
+public abstract class PaperIntegration extends QuiptIntegration {
 
     private final String name = "Quipt";
     private final File dataFolder;
@@ -46,7 +27,6 @@ public class PaperIntegration extends QuiptIntegration {
         events().register(new QuiptPlayerListener());
 
 
-
     }
 
     @Override
@@ -62,4 +42,11 @@ public class PaperIntegration extends QuiptIntegration {
     public Optional<JavaPlugin> plugin() {
         return plugin;
     }
+
+    @Override
+    public String version() {
+        return plugin().isPresent() ? plugin().get().getDescription().getVersion() : "DEV";
+    }
+
+
 }
