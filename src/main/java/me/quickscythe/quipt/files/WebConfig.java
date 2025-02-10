@@ -15,7 +15,7 @@ public class WebConfig extends Config {
     public boolean enable = true;
 
     @ConfigValue
-    public int port = 8080;
+    public int port = 5050;
 
     @ConfigValue
     public String host = "127.0.0.1";
