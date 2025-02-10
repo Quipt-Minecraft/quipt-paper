@@ -26,12 +26,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 
 
 public class QuiptPaperIntegration extends PaperIntegration {
 
 
     private ResourcePackHandler packHandler = null;
+
+    private QuiptServer server = null;
 
 
     public QuiptPaperIntegration(@Nullable JavaPlugin plugin) {
@@ -52,7 +55,7 @@ public class QuiptPaperIntegration extends PaperIntegration {
         DiscordConfig discordConfig = ConfigManager.getConfig(this, DiscordConfig.class);
         ResourceConfig resourceConfig = ConfigManager.getConfig(this, ResourceConfig.class);
 
-        QuiptServer server = new QuiptServer(this, serverConfig);
+        server = new QuiptServer(this, serverConfig);
 
         if (!resourceConfig.repo_url.isEmpty()) {
             packHandler = new ResourcePackHandler(server);
@@ -122,5 +125,17 @@ public class QuiptPaperIntegration extends PaperIntegration {
 
     public ResourcePackHandler packHandler() {
         return packHandler;
+    }
+
+    @Override
+    public void destroy() throws IOException {
+        super.destroy();
+        if(server !=null) {
+            try {
+                server.stop();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
