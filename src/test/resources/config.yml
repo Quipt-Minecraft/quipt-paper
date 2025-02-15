@@ -1,0 +1,8 @@
+server-type:
+  - Spigot:
+      - "1.14"
+
+users:
+  - "QuickScythe"
+
+plugin: "C:/Users/Camer/Downloads/Spawn-2.4.1.jar"

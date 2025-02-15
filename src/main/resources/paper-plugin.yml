@@ -2,6 +2,6 @@ name: "${name}"
 version: "${plugin_version}"
 author: "${author}"
 api-version: "${minecraft_version}"
-main: me.quickscythe.quipt.Initializer
-loader: me.quickscythe.quipt.Loader
+main: com.quiptmc.minecraft.paper.Initializer
+loader: com.quiptmc.minecraft.paper.Loader
 

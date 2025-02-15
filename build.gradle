@@ -1,17 +1,19 @@
-import java.awt.Color
 
 plugins {
     id 'java-library'
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id "com.modrinth.minotaur" version "2.+"
     id 'maven-publish'
+    id "io.papermc.paperweight.userdev" version "2.0.0-beta.13"
+
 }
 
-group = 'me.quickscythe'
+group = "com.quiptmc"
 version = "${plugin_version}-${minecraft_version}-${build_status}-B${build_number}"
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
     maven {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
@@ -24,6 +26,10 @@ repositories {
         name = "quipt"
         url = "https://repo.vanillaflux.com/repository/quipt/"
     }
+    maven {
+        name "jitpack"
+        url "https://jitpack.io"
+    }
 
 
 }
@@ -35,12 +41,15 @@ dependencies {
     testImplementation "ch.qos.logback:logback-classic:$logback_version"
     testImplementation "com.github.seeseemelk:MockBukkit-v1.21:3.133.2"
     testImplementation "org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT"
+    testImplementation "com.github.rogermiranda1000:WatchWolf-Tester:0.2.1"
 
 
-    implementation "io.papermc.paper:paper-api:${minecraft_version}-${paper_version}"
+    paperweight.paperDevBundle("${minecraft_version}-${paper_version}")
 
-    implementation "me.quickscythe:quipt-core:${quipt_core_version}"
-    implementation "me.quickscythe:quipt-bot:${quipt_bot_version}"
+
+    implementation "com.quiptmc:quipt-core:${quipt_core_version}"
+    implementation "com.quiptmc:quipt-bot:${quipt_bot_version}"
+    implementation "com.quiptmc:quipt-minecraft-utility:${quipt_minecraft_utility_version}"
     implementation "org.json:json:$json_version"
     implementation "org.eclipse.jgit:org.eclipse.jgit:$jgit_version"
     implementation "org.eclipse.jetty:jetty-server:$jetty_server_version"
@@ -56,8 +65,11 @@ tasks {
         minecraftVersion("${minecraft_version}")
     }
 }
+tasks.assemble {
+    dependsOn(tasks.reobfJar)
+}
 
-def targetJavaVersion = 21
+def targetJavaVersion = 22
 java {
     withSourcesJar()
     withJavadocJar()
@@ -146,3 +158,7 @@ tasks.register('copyGradleProperties', Copy) {
 
 tasks.processResources.dependsOn(copyGradleProperties)
 tasks.sourcesJar.dependsOn(copyGradleProperties)
+
+//paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
+
+
