@@ -3,3 +3,4 @@
 /.gradle/
 /.idea/
 /src/main/resources/gradle.properties
+/tests/

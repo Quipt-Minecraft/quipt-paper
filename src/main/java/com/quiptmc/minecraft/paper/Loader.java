@@ -44,9 +44,9 @@ public class Loader implements PluginLoader {
 
         MavenLibraryResolver quipt = new MavenLibraryResolver();
         quipt.addRepository(new RemoteRepository.Builder("quipt", "default", "https://repo.vanillaflux.com/repository/quipt/").build());
-        quipt.addDependency(new Dependency(new DefaultArtifact("me.quickscythe:quipt-bot:" + properties.getProperty("quipt_bot_version")), null));
-        quipt.addDependency(new Dependency(new DefaultArtifact("me.quickscythe:quipt-core:" + properties.getProperty("quipt_core_version")), null));
-        quipt.addDependency(new Dependency(new DefaultArtifact("me.quickscythe:quipt-minecraft-utilities:" + properties.getProperty("quipt_minecraft_utility_version")), null));
+        quipt.addDependency(new Dependency(new DefaultArtifact("com.quiptmc:quipt-bot:" + properties.getProperty("quipt_bot_version")), null));
+        quipt.addDependency(new Dependency(new DefaultArtifact("com.quiptmc:quipt-core:" + properties.getProperty("quipt_core_version")), null));
+        quipt.addDependency(new Dependency(new DefaultArtifact("com.quiptmc:quipt-minecraft-utility:" + properties.getProperty("quipt_minecraft_utility_version")), null));
 
 
         classpathBuilder.addLibrary(central);

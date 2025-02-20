@@ -11,6 +11,7 @@ import com.quiptmc.minecraft.paper.files.discord.ChannelsNestedConfig;
 import com.quiptmc.minecraft.paper.files.resource.AuthNestedConfig;
 import com.quiptmc.minecraft.paper.files.resource.HashesNestedConfig;
 import com.quiptmc.minecraft.paper.files.web.HealthReportNestedConfig;
+import com.quiptmc.minecraft.paper.utils.ApiManager;
 import com.quiptmc.minecraft.paper.utils.PaperIntegration;
 import com.quiptmc.minecraft.paper.utils.chat.MessageUtils;
 import com.quiptmc.minecraft.paper.utils.chat.placeholder.PlaceholderUtils;
@@ -19,32 +20,25 @@ import com.quiptmc.minecraft.paper.utils.heartbeat.Flutter;
 import com.quiptmc.minecraft.paper.utils.heartbeat.HeartbeatUtils;
 import com.quiptmc.minecraft.paper.utils.sessions.SessionManager;
 import com.quiptmc.minecraft.paper.utils.teleportation.LocationUtils;
+import com.quiptmc.minecraft.paper.web.CallbackHandler;
 import com.quiptmc.minecraft.paper.web.HealthReportHandler;
 import com.quiptmc.minecraft.paper.web.ResourcePackHandler;
 import com.quiptmc.core.config.ConfigManager;
 import com.quiptmc.core.discord.embed.Embed;
 import com.quiptmc.core.server.QuiptServer;
-import com.quiptmc.core.utils.NetworkUtils;
 import com.quiptmc.minecraft.MinecraftServer;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Statistic;
-import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-import org.json.simple.JSONArray;
+import org.yaml.snakeyaml.Yaml;
 
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -53,6 +47,8 @@ public class QuiptPaperIntegration extends PaperIntegration {
     private ResourcePackHandler packHandler;
     private QuiptServer server;
     private MinecraftServer minecraftServer;
+    private ApiManager apiManager;
+    private CallbackHandler callbackHandler;
 
     public QuiptPaperIntegration(@Nullable JavaPlugin plugin) {
         super(plugin);
@@ -66,6 +62,7 @@ public class QuiptPaperIntegration extends PaperIntegration {
         EventManager.init();
         PlaceholderUtils.registerPlaceholders();
         MessageUtils.start();
+        apiManager = new ApiManager(this);
 
         ApiConfig apiConfig = ConfigManager.getConfig(this, ApiConfig.class);
         WebConfig webConfig = ConfigManager.getConfig(this, WebConfig.class);
@@ -74,6 +71,12 @@ public class QuiptPaperIntegration extends PaperIntegration {
         ResourceConfig resourceConfig = ConfigManager.getConfig(this, ResourceConfig.class);
 
         server = new QuiptServer(this, serverConfig);
+        JSONObject paperProperties = loadJsonFromYamlFile(new File("config/paper-global.yml"));
+
+        if(!paperProperties.getJSONObject("proxies").getBoolean("proxy-protocol")){
+            callbackHandler = new CallbackHandler(server);
+            server.handler().handle("callback", callbackHandler, "callback/*");
+        }
 
         if (!resourceConfig.repo_url.isEmpty()) {
             packHandler = new ResourcePackHandler(server);
@@ -98,90 +101,33 @@ public class QuiptPaperIntegration extends PaperIntegration {
             private long last = 0;
 
             @Override
-            public boolean run() throws UnknownHostException {
+            public boolean run() {
                 long now = System.currentTimeMillis();
-                if (now - last >= TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS)) {
+                if (now - last >= TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES)) {
+                    apiManager.runUpdate();
                     last = now;
-                    JSONObject data = new JSONObject();
-                    data.put("players", Bukkit.getOnlinePlayers().size());
-                    data.put("uptime", now - started);
-                    data.put("tps", Bukkit.getTPS()[0]);
-                    data.put("max_players", Bukkit.getMaxPlayers());
-                    data.put("server_name", Bukkit.getServer().getName());
-                    data.put("server_version", Bukkit.getServer().getVersion());
-                    data.put("server_motd", MessageUtils.plainText(Bukkit.getServer().motd()));
-                    data.put("server_ip", getIP());
-                    data.put("server_port", Bukkit.getServer().getPort());
-                    data.put("server_online", Bukkit.getServer().getOnlineMode());
-                    data.put("server_whitelist", Bukkit.getServer().hasWhitelist());
-                    data.put("server_spawn_protection", Bukkit.getServer().getSpawnRadius());
-                    data.put("server_view_distance", Bukkit.getServer().getViewDistance());
-                    data.put("server_gamemode", Bukkit.getServer().getDefaultGameMode().name());
-                    data.put("server_worlds", Bukkit.getServer().getWorlds().size());
-                    data.put("player_stats", new JSONArray());
-
-                    for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                        JSONObject playerData = new JSONObject();
-                        playerData.put("name", player.getName());
-                        playerData.put("uuid", player.getUniqueId().toString());
-                        playerData.put("first_played", player.getFirstPlayed());
-                        playerData.put("last_played", player.getLastSeen());
-                        playerData.put("banned", player.isBanned());
-                        playerData.put("whitelisted", player.isWhitelisted());
-                        playerData.put("online", player.isOnline());
-                        playerData.put("op", player.isOp());
-                        JSONObject stats = new JSONObject();
-
-                        for (Statistic stat : Statistic.values()) {
-                            if (stat.getType().equals(Statistic.Type.UNTYPED)) {
-                                int statAmount = player.getStatistic(stat);
-                                if (statAmount > 0) stats.put(stat.name(), statAmount);
-                            } else if (stat.getType().equals(Statistic.Type.ENTITY)) {
-                                for (EntityType type : EntityType.values()) {
-                                    if (!type.equals(EntityType.UNKNOWN)) {
-                                        int statAmount = player.getStatistic(stat, type);
-                                        if (statAmount > 0) stats.put(stat.name() + "_" + type.name(), statAmount);
-                                    }
-                                }
-                            } else if (stat.getType().equals(Statistic.Type.BLOCK) || stat.getType().equals(Statistic.Type.ITEM)) {
-                                for (Material material : Material.values()) {
-                                    if (!material.isLegacy()) {
-                                        int statAmount = player.getStatistic(stat, material);
-                                        if (statAmount > 0) stats.put(stat.name() + "_" + material.name(), statAmount);
-                                    }
-                                }
-                            }
-                        }
-                        playerData.put("stats", stats);
-                        data.getJSONArray("player_stats").put(playerData);
-                    }
-                    NetworkUtils.post(apiConfig.endpoint + "/update/" + getIP(), data);
                 }
                 return true;
             }
         });
 
-        minecraftServer = new MinecraftServer(getIP(), apiConfig.secret, apiConfig.endpoint);
+//        minecraftServer = new MinecraftServer(apiManager.getIP(), apiConfig.secret, apiConfig.endpoint + "/server_status/");
+    }
+
+    private JSONObject loadJsonFromYamlFile(File file) {
+        try {
+            Yaml yaml = new Yaml();
+            return new JSONObject((Map<String, Object>) yaml.load(new FileInputStream(file)));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public MinecraftServer minecraftServer() {
         return minecraftServer;
     }
 
-    private String getIP() {
-        if (!Bukkit.getIp().isEmpty()) return Bukkit.getIp();
-        try {
-            URL url = URI.create("http://checkip.amazonaws.com").toURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                return in.readLine();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
+
 
     @SuppressWarnings("unchecked")
     private void registerConfigs() {
@@ -232,6 +178,10 @@ public class QuiptPaperIntegration extends PaperIntegration {
 
     public ResourcePackHandler packHandler() {
         return packHandler;
+    }
+
+    public ApiManager apiManager() {
+        return apiManager;
     }
 
     @Override

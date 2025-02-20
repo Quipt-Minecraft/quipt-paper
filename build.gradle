@@ -39,9 +39,6 @@ dependencies {
     testImplementation platform("org.junit:junit-bom:$junit_version")
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "ch.qos.logback:logback-classic:$logback_version"
-    testImplementation "com.github.seeseemelk:MockBukkit-v1.21:3.133.2"
-    testImplementation "org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT"
-    testImplementation "com.github.rogermiranda1000:WatchWolf-Tester:0.2.1"
 
 
     paperweight.paperDevBundle("${minecraft_version}-${paper_version}")
@@ -58,6 +55,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    workingDir = file('tests')
 }
 
 tasks {

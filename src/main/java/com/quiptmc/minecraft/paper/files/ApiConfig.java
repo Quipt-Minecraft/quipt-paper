@@ -12,7 +12,10 @@ import java.io.File;
 public class ApiConfig extends Config {
 
     @ConfigValue
-    public String endpoint = "https://api.quipt.com/";
+    public String endpoint = "https://quipt-api.azurewebsites.net/api";
+
+//    @ConfigValue
+//    public String endpoint = "https://api.quiptmc.com";
 
     @ConfigValue
     public String secret = "You Should Change This To Literally Anything Else";
